@@ -1,0 +1,13 @@
+Ok, here's how this works. You want to link to a file (e.g. a PDF or a JPG) but the browser is loading it instead of actually downloading it into the users Downloads folder.
+
+Download File to the rescue!
+
+We've created a plugin which works in 2 parts:
+
+1. It creates a URL which points to a special template designed to serve files
+2. It automatically converts a template into a file serving machine!
+
+Other benefits.
+
+1. Paths to your download files are hidden, with a BASE 64 string served instead
+2. It's free - as in beer, so enjoy.
