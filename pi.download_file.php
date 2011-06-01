@@ -50,6 +50,9 @@ class Download_file {
 	public function serve()
 	{
 	
+		$restricted = $this->EE->TMPL->fetch_param('restricted');
+		$prepend = $this->EE->TMPL->fetch_param('prepend');
+		
 		$this->CI->load->helper('download');
 		$this->CI->load->library('encrypt');
 		
@@ -60,9 +63,15 @@ class Download_file {
 
 		
 		$data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $file);		
-		$name = str_replace("/assets/","tf_",$file);
+		$name = str_replace("/assets/",$prepend,$file);
 		
-		force_download($name, $data);
+		if ($restricted != ""){
+			if (stristr($_SERVER['HTTP_REFERER'], $restricted)) force_download($name, $data);
+			else header("Location: /");die;
+		} else {
+			force_download($name, $data);		
+		}
+	
 		
 		return "";
 	}
@@ -91,10 +100,13 @@ class Download_file {
 	{
 		ob_start();
 ?>
-This addon will serve a file as a file, not a page. This means PDF's will download automatically. It also goes some way in hiding where all these files live on your server. It won't prevent hot linking though, for this you'll need to set your permissions in Apache. You do use Apache don't you?
+This addon will serve a file as a file, not a page. This means PDF's will download automatically. It also goes some way in hiding where all these files live on your server.
 
 Step 1. Insert this in a template (e.g. /site/download/): 
-{exp:download_file:serve}
+{exp:download_file:serve restricted="mydomain.com" prepend="mysite_"}
+
+Note: only use the restricted parameter if you want to prevent hotlinking
+Note: only use the prepend parameter if you want to add a string to the front of the files you are serving
 
 Step 2. Bang this in your link:
 <a href="{exp:download_file:link file='/downloads/file.pdf' template='/site/download' remove='http://mydomain.com'}">Download</a>
