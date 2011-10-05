@@ -104,10 +104,11 @@ ob_start();
 This addon will serve a file as a file, not a page. This means PDF's will download automatically. It also goes some way in hiding where all these files live on your server.
 
 Step 1. Insert this in a template (e.g. /site/download/):
-{exp:download_file:serve restricted="mydomain.com" prepend="mysite_"}
+{exp:download_file:serve restricted="mydomain.com" prepend="mysite_" remove_path="/assets/"}
 
 Note: only use the restricted parameter if you want to prevent hotlinking
 Note: only use the prepend parameter if you want to add a string to the front of the files you are serving
+Note: if you don't use "remove_path" the path to your files will be viewable within the filename
 
 Step 2. Bang this in your link:
 <a href="{exp:download_file:link file='/downloads/file.pdf' template='/site/download' remove='http://mydomain.com'}">Download</a>
