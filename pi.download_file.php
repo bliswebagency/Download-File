@@ -43,53 +43,73 @@ public $return_data;
 */
 public function __construct()
 {
-$this->EE =& get_instance();
-$this->CI =& get_instance();
+ $this->EE =& get_instance();
+	$this->CI =& get_instance();
 }
 
 public function serve()
 {
 
-$restricted = $this->EE->TMPL->fetch_param('restricted');
-$prepend = $this->EE->TMPL->fetch_param('prepend');
-$remove_path = $this->EE->TMPL->fetch_param('remove_path');
+	$restricted = $this->EE->TMPL->fetch_param('restricted');
+	$prepend = $this->EE->TMPL->fetch_param('prepend');
+	$remove_path = $this->EE->TMPL->fetch_param('remove_path');
 
-$this->CI->load->helper('download');
-$this->CI->load->library('encrypt');
+	$this->CI->load->helper('download');
+	$this->CI->load->library('encrypt');
 
-$totalsegs = $this->CI->uri->total_segments();
-$msg = $this->CI->uri->segment($totalsegs, 0);
-$msg = str_replace("_","=",$msg);
-$file = unserialize(base64_decode($msg));
+	$totalsegs = $this->CI->uri->total_segments();
+	$msg = $this->CI->uri->segment($totalsegs, 0);
+	$msg = str_replace("_","=",$msg);
+	$file = unserialize(base64_decode($msg));
 
+	echo $file;
 
-$data = file_get_contents($_SERVER['DOCUMENT_ROOT'] . $file);
-$name = str_replace($remove_path,$prepend,$file);
-
-if ($restricted != ""){
-if (stristr($_SERVER['HTTP_REFERER'], $restricted)) force_download($name, $data);
-else header("Location: /");die;
-} else {
-force_download($name, $data);
-}
+	// make sure trailing slash is not present in host
+	$host = $trimmed = rtrim($_SERVER['DOCUMENT_ROOT'], "/");
+	
+	// make sure preceding slash is present on file name.
+	$file = (substr($str, 0, 1) == "/") ? $file : '/'.$file;
 
 
-return "";
+	$data = file_get_contents($_SERVER['DOCUMENT_ROOT'].$file);
+	$name = str_replace($remove_path,$prepend,$file);
+
+	if ($restricted != "")
+	{
+		if (stristr($_SERVER['HTTP_REFERER'], $restricted)) force_download($name, $data);
+		else header("Location: /");die;
+	} else {
+		force_download($name, $data);
+	}
+
+	return "";
 }
 
 public function link()
 {
+	$file = $this->EE->TMPL->fetch_param('file');
+	$template = $this->EE->TMPL->fetch_param('template');
+	$remove = $this->EE->TMPL->fetch_param('remove');
+	$regex = $this->EE->TMPL->fetch_param('use_regex', 'no');
+	
+	if ($remove)
+	{
+		if ($regex === 'yes')
+		{
+			$file = preg_replace($remove,"",$file);
+		}
+		else 
+		{
+			$file = str_replace($remove,"",$file);
+		}
+	}
 
-$file = $this->EE->TMPL->fetch_param('file');
-$template = $this->EE->TMPL->fetch_param('template');
-$remove = $this->EE->TMPL->fetch_param('remove');
-if ($remove) $file = str_replace($remove,"",$file);
-$encoded_data = base64_encode(serialize($file));
-$encoded_data = str_replace("=","_",$encoded_data);
+	$encoded_data = base64_encode(serialize($file));
+	$encoded_data = str_replace("=","_",$encoded_data);
 
-$url = $template . $encoded_data;
+	$url = $template . $encoded_data;
 
-return $url;
+	return $url;
 }
 
 // ----------------------------------------------------------------
