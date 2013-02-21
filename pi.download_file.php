@@ -62,8 +62,6 @@ public function serve()
 	$msg = str_replace("_","=",$msg);
 	$file = unserialize(base64_decode($msg));
 
-	echo $file;
-
 	// make sure trailing slash is not present in host
 	$host = $trimmed = rtrim($_SERVER['DOCUMENT_ROOT'], "/");
 	
