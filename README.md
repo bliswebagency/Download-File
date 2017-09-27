@@ -13,9 +13,9 @@ Other benefits.
 2. It's free - as in beer, so enjoy.
 3. It will prevent hotlinking! To do this you must be serving your files from a consistent domain e.g. www.mysite.com
 
-FAQ
+## FAQ
 
-Can I use this hotlinking preventing feature if I'm running a sub domain for my dev environment?
+### Can I use this hotlinking preventing feature if I'm running a sub domain for my dev environment?
 
 Yes, the restrict parameter is just looking for the existance of a string within the referring URL. For example
 if you have:
